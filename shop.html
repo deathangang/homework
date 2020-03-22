@@ -70,6 +70,59 @@
             display:inline;
         }
     </style>
+
+      <script type="text/javascript">
+        
+        //핸드폰 형식 체크 함수
+        function isCellPhone(phone) {
+            //phone = phone.split('-').join('');
+            let regPhone = /[01](0|1|6|7|8|9)[-](\d{4}|\d{3})[-]\d{4}$/; 
+            return regPhone.test(phone);
+        }        
+
+         function order() {
+            let text = $('#nameText').val()
+            let num =  $('#inputGroupSelect01 option:selected').val()
+            let numcheck = false
+            let address =  $('#address').val()
+            let phone =  $('#phone').val()
+            
+            if (num==1) {
+                numcheck = true
+            }else if(num==2){
+                numcheck = true
+            }else if(num==3){
+                numcheck = true
+            }
+            
+
+            if (text == '') {
+                alert('성함을 입력해주세요!')
+                $('#nameText').focus();
+            }
+
+            if (num == false) {
+                alert('수량을 입력해주세요!');
+                $('#inputGroupSelect01 option:selected').focus();
+            }
+
+            if (address == '') {
+                alert('주소를 입력해주세요!')
+                $('#address').focus();
+            }
+
+            let phonecheck = isCellPhone(phone)
+            //alert(phonecheck)
+                if (phonecheck == false) {
+                    alert('전화번호를 입력해주세요! 입력방식은 "000-0000-0000" 입니다')
+                    $('#phone').focus();        
+                }    
+
+            // 1. names-q7의 내부 태그를 모두 비운다.(jQuery의 $('....').empty()를 이용하면 굿!)
+        }
+
+
+    </script>
 </head>
 
 <body>
@@ -97,7 +150,7 @@
                     <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">성함</span>
                     </div>
-                    <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                    <input type="text" id="nameText" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
                      
                 </div>
                 
@@ -118,7 +171,7 @@
                     <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">주소</span>
                     </div>
-                    <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                    <input type="text" id="address" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
                      
                 </div>
 
@@ -126,12 +179,12 @@
                     <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">전화번호</span>
                     </div>
-                    <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                    <input type="text" id="phone" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
                      
                 </div>
             </div>
             <p align=center>
-            <button type="submit" class="btn btn-primary" >주문하기</button>
+            <button type="submit" onclick="order()" class="btn btn-primary" >주문하기</button>
             </p>
         </div>
 
