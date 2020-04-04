@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <!-- Webpage Title -->
+    <title>Hello, world!</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <!-- 구글폰트     -->
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Brush+Script|Nanum+Myeongjo&display=swap" rel="stylesheet">   
+    <style>
+        .wrap{
+        width:900px;
+        margin:auto;
+        }
+
+        .mypp{
+        color: blue;
+
+        }
+
+        /* 바디 폰트적용 */
+        *{
+         font-family: 'Nanum Brush Script', cursive;
+        }
+
+        .article{
+            width:500px;
+            margin:5px 50px 20px 50px;
+        }
+
+        .bbd {
+        width: 500px;
+        height: 500px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding : 10px;
+        margin:5px 50px 20px 50px;
+          }
+
+          .bbd2 {
+        width: 500px;
+        height: 350px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding : 10px;
+        margin:5px 50px 20px 50px;
+          }  
+
+
+        h1,
+        h3{
+            display:inline;
+        }
+    </style>
+
+      <script type="text/javascript">
+        
+        $(document).ready(function () {
+            $('#orders-box').html('');
+            listing();
+        });
+
+
+
+        //핸드폰 형식 체크 함수1
+        function isCellPhone(phone) {
+            //phone = phone.split('-').join('');
+            let regPhone = /[01](0|1|6|7|8|9)[-](\d{4}|\d{3})[-]\d{4}$/; 
+            return regPhone.test(phone);
+        }        
+
+         function order() {
+            let text = $('#nameText').val()
+            let num =  $('#inputGroupSelect01 option:selected').val()
+            let numcheck = false
+            let address =  $('#address').val()
+            let phone =  $('#phone').val()
+            
+            if (num==1) {
+                numcheck = true
+            }else if(num==2){
+                numcheck = true
+            }else if(num==3){
+                numcheck = true
+            }
+            
+
+            if (text == '') {
+                alert('성함을 입력해주세요!')
+                $('#nameText').focus();
+                return;
+            }
+
+            if (num == false) {
+                alert('수량을 입력해주세요!');
+                $('#inputGroupSelect01 option:selected').focus();
+                return;
+            }
+
+            if (address == '') {
+                alert('주소를 입력해주세요!')
+                $('#address').focus();
+                return;
+            }
+
+            let phonecheck = isCellPhone(phone)
+            //alert(phonecheck)
+                if (phonecheck == false) {
+                    alert('전화번호를 입력해주세요! 입력방식은 "000-0000-0000" 입니다')
+                    $('#phone').focus();  
+                    return;      
+                }    
+
+            // 1. names-q7의 내부 태그를 모두 비운다.(jQuery의 $('....').empty()를 이용하면 굿!11)
+
+            $.ajax({
+                  type: "POST",
+                  url: "/orders",
+                  data:{
+                      text_give: text, 
+                      num_give: num,
+                      address_give: address,
+                      phone_give: phone,
+                       },
+                  success: function (response) {
+                      if(response['result']=='success'){
+                          alert(response['msg']);
+                          $('#nameText').val('');
+                          $('#inputGroupSelect01').val('');
+                          $('#address').val(''); 
+                          $('#phone').val(''); 
+                          window.location.reload(); 
+                          }
+                      }
+                  }
+              );   
+
+        }
+    
+
+        function listing() {
+            // 1. 리뷰 목록을 서버에 요청하기
+            // 2. 요청 성공 여부 확인하기
+            // 3. 요청 성공했을 때 리뷰를 올바르게 화면에 나타내기
+		// 1. 리뷰 목록을 서버에 요청하기
+                $.ajax({
+                    type: "GET",
+                    url: "/orders",
+                    data: {},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            orders = response['orders']
+
+                            for(let i=0;i<orders.length;i++){
+                                make_card(orders[i]['text'],orders[i]['num'],orders[i]['address'],orders[i]['phone'])
+                            }
+
+                        }
+                        else {
+                            alert('등록정보를 불러오지 못했습니다')
+                        } 
+
+                        
+                    }
+                });
+            }
+
+
+            
+        function make_card(text, num, address,phone) {
+            let temp_html = '<tr>\
+                                <td>'+ text + '</td>\
+                                <td>'+ num + '</td>\
+                                <td>'+ address + '</td>\
+                                <td>'+ phone + '</td>\
+                            </tr>';
+            $('#orders-box').append(temp_html);
+        }
+
+
+    </script>
+</head>
+
+<body>
+<div class="wrap">
+
+        <div class="bbd">
+
+            <img width=480px src="http://i.011st.com/ex_t/R/400x400/1/85/0/src/RoL/dl/20/2/4/2/3/4/6/gdcWL/512242346_132295617.jpg,/pd/2020/03/rztiV/E_844.png;g=1;off=%2B15%2B15"
+            alt="Card image cap">
+    
+        </div>
+
+        <div class="article">
+        <h1>치닝디핑         </h1>
+        10만원/1EA<br>
+        <h2>밖에 나가기 위험한 시국. 집안에 헬스장을 꾸며보자</h2>
+
+        </div>
+
+         <div class="bbd2">
+          
+            <div class="form-group">
+            <h3><p align="center">주문자 정보</p></h3>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">성함</span>
+                    </div>
+                    <input type="text" id="nameText" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                     
+                </div>
+                
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="inputGroupSelect01">수량</label>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect01">
+                      <option selected value>수량을 선택 해주세요.</option>
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                    </select>
+                  </div>
+                  
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">주소</span>
+                    </div>
+                    <input type="text" id="address" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                     
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">전화번호</span>
+                    </div>
+                    <input type="text" id="phone" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                     
+                </div>
+            </div>
+            <p align=center>
+            <button type="submit" onclick="order()" class="btn btn-primary" >주문하기</button>
+            </p>
+        </div>
+        <div class="orders">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">이름</th>
+                        <th scope="col">수량</th>
+                        <th scope="col">주소</th>
+                        <th scope="col">전화번호</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-box">
+                    <tr>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>@mdo</td>
+                        <td>@mdo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+</div>
+
+</body>
+
+</html>
