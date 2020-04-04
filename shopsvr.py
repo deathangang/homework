@@ -17,7 +17,6 @@ def write_review():
       num_receive = request.form['num_give']
       address_receive = request.form['address_give']
       phone_receive = request.form['phone_give']
-
       # DB에 삽입할 order 만들기
       order = {
          'text': text_receive,
