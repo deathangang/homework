@@ -24,7 +24,7 @@ def write_review():
          'address': address_receive,
          'phone': phone_receive
       }
-      # reviews에 review 저장하기
+      # order
       db.orders.insert_one(order)
       # 성공 여부 & 성공 메시지 반환
       return jsonify({'result': 'success', 'msg': '리뷰가 성공적으로 작성되었습니다.'})
